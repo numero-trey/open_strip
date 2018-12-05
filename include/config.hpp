@@ -1,0 +1,24 @@
+#ifndef OPEN_STRIP_INCLUDE_CONFIG_HPP_
+#define OPEN_STRIP_INCLUDE_CONFIG_HPP_
+
+#define LEDS_PER_STRIP 64
+#define NUM_STRIPS 8
+
+#define FRAME_RATE 200
+
+#define ADDRESSABLE_PIXELS 32
+#define CONTROL_CHANNELS 9
+#define CHANNELS_PER_STRIP (CONTROL_CHANNELS + ADDRESSABLE_PIXELS * 3)
+
+#ifdef ARDUINO_LOLIN32
+  #define LED_PIN_0 32
+  #define LED_PIN_1 33
+  #define LED_PIN_2 25
+  #define LED_PIN_3 26
+  #define LED_PIN_4 27
+  #define LED_PIN_5 14
+  #define LED_PIN_6 12
+  #define LED_PIN_7 13
+#endif //def ARDUINO_LOLIN32
+
+#endif //ndef OPEN_STRIP_INCLUDE_CONFIG_HPP_
