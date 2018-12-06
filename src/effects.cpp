@@ -91,7 +91,7 @@ void stripes(StripState &strip, CRGB *leds) {
   }
 
 
-  strip.workspace[0] %= stripe_width * strip.numColors(2) * 255;
+  strip.workspace[0] %= stripe_width * strip.numColors(2) * 400;
   //Serial.printf("a:%ld,w:%d\n", strip.workspace[0], stripe_width * strip.numColors(2));
   //Serial.print("\n");
 }

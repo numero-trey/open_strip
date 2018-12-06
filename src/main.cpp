@@ -1,10 +1,11 @@
 #include <Arduino.h>
-#include <WiFi.h>
-#include <WiFiUdp.h>
+//#include <WiFi.h>
+//#include <WiFiUdp.h>
 #include <math.h>
+#include "BluetoothSerial.h"
 
 #include <FastLED.h>
-#include <ArtnetWifi.h>
+//#include <ArtnetWifi.h>
 #include <PacketSerial.h>
 
 #include "main.hpp"
@@ -19,9 +20,11 @@
 
 using namespace std;
 
-ArtnetWifi artnetnode;
+//ArtnetWifi artnetnode;
 
 PacketSerial myPacketSerial;
+
+BluetoothSerial SerialBT;
 
 CRGB leds[NUM_STRIPS][LEDS_PER_STRIP];
 StripState strips[NUM_STRIPS];
@@ -33,19 +36,21 @@ void setup() {
   Serial.println();
   Serial.println("Connecting...");
 
-  WiFi.begin(kWifiSSID, kWifiPassword);
+  // WiFi.begin(kWifiSSID, kWifiPassword);
 
   // Await connection
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(250);
-  }
+  // while (WiFi.status() != WL_CONNECTED) {
+  //   delay(250);
+  // }
 
   // Connected
-  Serial.println();
-  Serial.print("Connected, IP address: ");
-  Serial.println(WiFi.localIP());
+  // Serial.println();
+  // Serial.print("Connected, IP address: ");
+  // Serial.println(WiFi.localIP());
+  SerialBT.begin("OpenStrip");
+  Serial.println("Bluetooth started...");
 
-  myPacketSerial.setStream(&Serial);
+  myPacketSerial.setStream(&SerialBT);
   myPacketSerial.setPacketHandler(&onSerialFrame);
 
   // Init led strips
@@ -63,14 +68,15 @@ void setup() {
 
   FastLED.show();
 
-  artnetnode.begin();
-  artnetnode.setArtDmxCallback(onDmxFrame);
+  // artnetnode.begin();
+  // artnetnode.setArtDmxCallback(onDmxFrame);
 
 }
 
 void loop() {
   //Serial.print(".");
-  artnetnode.read();
+  // artnetnode.read();
+  myPacketSerial.update();
 
   EVERY_N_MILLIS(1000 / FRAME_RATE) {
     // Update enimations
@@ -101,10 +107,10 @@ void onDmxFrame(uint16_t universe, uint16_t length, uint8_t sequence, uint8_t* d
 }
 
 void onSerialFrame(const uint8_t* buffer, size_t size) {
+  Serial.printf("rcv:%d\n", size);
   uint8_t parse_buff[512];
   memcpy(parse_buff, buffer, _min(512, size));
   parseFrame(parse_buff, size, 0);
-  
 }
 
 void parseFrame(uint8_t *data, uint16_t length, uint8_t start_strip) {
