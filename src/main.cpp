@@ -5,6 +5,7 @@
 
 #include <FastLED.h>
 #include <ArtnetWifi.h>
+#include <PacketSerial.h>
 
 #include "main.hpp"
 #include "config.hpp"
@@ -19,6 +20,8 @@
 using namespace std;
 
 ArtnetWifi artnetnode;
+
+PacketSerial myPacketSerial;
 
 CRGB leds[NUM_STRIPS][LEDS_PER_STRIP];
 StripState strips[NUM_STRIPS];
@@ -41,6 +44,9 @@ void setup() {
   Serial.println();
   Serial.print("Connected, IP address: ");
   Serial.println(WiFi.localIP());
+
+  myPacketSerial.setStream(&Serial);
+  myPacketSerial.setPacketHandler(&onSerialFrame);
 
   // Init led strips
   FastLED.addLeds<NEOPIXEL, LED_PIN_0>(leds[0], LEDS_PER_STRIP).setCorrection(TypicalLEDStrip);
@@ -92,6 +98,13 @@ void onDmxFrame(uint16_t universe, uint16_t length, uint8_t sequence, uint8_t* d
     // }
     parseFrame(data, length, 0);
   }
+}
+
+void onSerialFrame(const uint8_t* buffer, size_t size) {
+  uint8_t parse_buff[512];
+  memcpy(parse_buff, buffer, _min(512, size));
+  parseFrame(parse_buff, size, 0);
+  
 }
 
 void parseFrame(uint8_t *data, uint16_t length, uint8_t start_strip) {
