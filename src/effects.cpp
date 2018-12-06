@@ -61,7 +61,7 @@ void stripes(StripState &strip, CRGB *leds) {
   // animated_offset == strip.workspace[0]
   // Stripe width ranges from strip.num_leds to 1
   uint8_t stripe_width = scale8(strip.num_leds - 1, 255 - strip.opt_a) + 1;
-  long calc_offset = strip.position - 127 + strip.workspace[0] / 256;
+  long calc_offset = strip.position - 127 + strip.workspace[0] / 400;
   // Shift calculated offset until it is positive
   while (calc_offset < 0) calc_offset += stripe_width * strip.numColors(2);
   //Serial.printf("sw:%d,ofs:%d\n", stripe_width, calc_offset);
@@ -79,11 +79,11 @@ void stripes(StripState &strip, CRGB *leds) {
   if (calc_speed > 64) {
     // Scale positive values
     //Serial.printf("sh:%d\n", scale16by8(300, (calc_speed - 65) * 4 + 3) + 61);
-    strip.workspace[0] += scale16by8(300, (calc_speed - 65) * 4 + 3) + 61;
+    strip.workspace[0] += scale16by8(400, (calc_speed - 65) * 4 + 3) + 61;
   } else if (calc_speed < -64) {
     // Scale negative values
     //Serial.printf("sl:%d\n", scale16by8(300, (abs(calc_speed) - 65) * 4 + 3) + 61);
-    strip.workspace[0] -= scale16by8(300, (abs(calc_speed) - 65) * 4 + 3) + 61;
+    strip.workspace[0] -= scale16by8(400, (abs(calc_speed) - 65) * 4 + 3) + 61;
   } else {
     // Unscaled values
     //Serial.printf("s:%d\n", calc_speed);
