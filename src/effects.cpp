@@ -24,16 +24,15 @@ void staticColors(StripState &strip, CRGB *leds) {
   // strip.uworkspace[0] == frame counter
   // strip.uworkspace[1] == color index
   // Serial.printf("speed:%d", strip.speed);
-  // static uint16_t kMaxTimeFrames = 10 * FRAME_RATE;
-  uint16_t color_time = (255 - strip.speed) * 2; //scale16by8(kMaxTimeFrames, strip.speed);
+  static uint16_t kMaxTimeFrames = 5 * FRAME_RATE;
+  uint16_t color_time = strip.scaledSpeedInv(kMaxTimeFrames);
   uint16_t fade_time = scale16by8(color_time, strip.fade);
   int8_t prev_color_idx;
   CRGB buffer_color;
 
-  if (color_time != 255 && strip.uworkspace[0] >= color_time) {
+  if (strip.speed != 0 && strip.uworkspace[0] >= color_time) {
     strip.uworkspace[0] = 0; // Reset timer
-    // Advance current color
-    strip.uworkspace[1]++;
+    strip.uworkspace[1]++;   // Advance current color
     if (strip.uworkspace[1] >= strip.numColors(1)) strip.uworkspace[1] = 0; // Clamp color to max
   }
   // Get next color
@@ -42,9 +41,9 @@ void staticColors(StripState &strip, CRGB *leds) {
 
   // Blend colors
   if (strip.uworkspace[0] >= fade_time) {
-    buffer_color = strip.getColor(strip.uworkspace[1]);
+    buffer_color = strip.getIndexedColor(strip.uworkspace[1]);
   } else {
-    buffer_color = blend(strip.getColor(prev_color_idx), strip.getColor(strip.uworkspace[1]), 255 * strip.uworkspace[0] / fade_time);
+    buffer_color = blend(strip.getIndexedColor(prev_color_idx), strip.getIndexedColor(strip.uworkspace[1]), 255 * strip.uworkspace[0] / fade_time);
   }
 
   fill_solid(
@@ -73,17 +72,17 @@ void stripes(StripState &strip, CRGB *leds) {
     leds[idx] = strip.getIndexedColor(color_idx);
   }
 
-  // Scale up values 64..127 to 64..255
+  // Scale up values 64..127 to 64..a lot
   int8_t calc_speed = strip.speed - 128;
     //Serial.printf("c:%d,", calc_speed);
   if (calc_speed > 64) {
     // Scale positive values
-    //Serial.printf("sh:%d\n", scale16by8(300, (calc_speed - 65) * 4 + 3) + 61);
-    strip.workspace[0] += scale16by8(400, (calc_speed - 65) * 4 + 3) + 61;
+    //Serial.printf("sh:%d\n", 400 * (calc_speed - 64) / 63 + 64);
+    strip.workspace[0] += 400 * (calc_speed - 64) / 63 + 64;
   } else if (calc_speed < -64) {
     // Scale negative values
-    //Serial.printf("sl:%d\n", scale16by8(300, (abs(calc_speed) - 65) * 4 + 3) + 61);
-    strip.workspace[0] -= scale16by8(400, (abs(calc_speed) - 65) * 4 + 3) + 61;
+    //Serial.printf("sl:%d\n", 400 * (abs(calc_speed) - 64) / 63) + 64);
+    strip.workspace[0] -= 400 * (abs(calc_speed) - 64) / 63 + 64;
   } else {
     // Unscaled values
     //Serial.printf("s:%d\n", calc_speed);

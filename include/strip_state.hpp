@@ -8,6 +8,7 @@
 class StripState {
   struct StripColor { uint8_t x; uint8_t y; uint8_t z; };
   bool dim_dirty_, program_dirty_, first_frame_;
+  uint16_t _scaleSpeed(uint16_t max, uint8_t input);
 
 public:
   const uint8_t kAddressableHeads = 32;
@@ -36,6 +37,9 @@ public:
   CRGB getIndexedColor(uint8_t idx);
 
   uint8_t numColors(uint8_t min);
+
+  uint16_t scaledSpeed(uint16_t max) { return _scaleSpeed(max, speed); }
+  uint16_t scaledSpeedInv(uint16_t max) { return _scaleSpeed(max, 255 - speed); }
 
 }; // class StripPacket
 

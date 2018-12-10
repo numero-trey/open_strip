@@ -60,3 +60,18 @@ CRGB StripState::getIndexedColor(uint8_t idx) {
 uint8_t StripState::numColors(uint8_t min) {
   return _min(_max(num_colors, min), 32);
 }
+
+uint16_t StripState::_scaleSpeed(uint16_t max, uint8_t input) {
+  if (input > 128) {
+    // Scale positive values
+    return max * (input - 128) / 127 + 128;
+  } else {
+    // Unscaled values
+    return input;
+  }
+
+  // else if (input < -64) {
+  //   // Scale negative values
+  //   return max * (abs(input) - 64) / 63 + 64;
+  // }
+}

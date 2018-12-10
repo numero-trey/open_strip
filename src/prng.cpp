@@ -15,8 +15,7 @@ long unsigned int PRNG::rand() {
   return ( seed_val = (long)lo );
 }
 
-void PRNG::seed(long unsigned int seedin)
-{
+void PRNG::seed(long unsigned int seedin) {
     if (seedin == 0) seedin = 1;
     seed_val = seedin;
 }

@@ -14,6 +14,6 @@ public:
 
   // Get a random value
   long unsigned int rand();
-}
+};
 
 #endif //ndef OPEN_STRIP_INCLUDE_PRNG_HPP_
